@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle, Eye, RotateCcw } from "lucide-react";
+import { ArrowLeft, CheckCircle, Eye, RotateCcw, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import AccountPool from "@/components/drag-drop/AccountPool";
 import DropZone from "@/components/drag-drop/DropZone";
 import SolutionsOverlay from "@/components/drag-drop/SolutionsOverlay";
+import CashFlowStructure from "@/components/drag-drop/CashFlowStructure";
 import chartData from "@/data/chartOfAccounts.json";
 
 type StatementType = "balance-sheet" | "income-statement" | "cash-flow";
@@ -23,6 +24,7 @@ const DragDrop = () => {
   const [activeStatement, setActiveStatement] = useState<StatementType>("balance-sheet");
   const [placedAccounts, setPlacedAccounts] = useState<{ [key: string]: Account[] }>({});
   const [showSolutions, setShowSolutions] = useState(false);
+  const [showCashFlowStructure, setShowCashFlowStructure] = useState(false);
 
   const accounts: Account[] = chartData.chartOfAccounts;
 
@@ -151,7 +153,7 @@ const DragDrop = () => {
           </div>
         </div>
 
-        <div className="flex gap-4 justify-center">
+        <div className="flex gap-4 justify-center flex-wrap">
           <Button variant="outline" size="lg" onClick={handleReset}>
             <RotateCcw className="mr-2 h-4 w-4" />
             Reset Canvas
@@ -160,6 +162,12 @@ const DragDrop = () => {
             <CheckCircle className="mr-2 h-4 w-4" />
             Check Answers
           </Button>
+          {activeStatement === "cash-flow" && (
+            <Button variant="outline" size="lg" onClick={() => setShowCashFlowStructure(true)}>
+              <BookOpen className="mr-2 h-4 w-4" />
+              View Structure
+            </Button>
+          )}
           <Button size="lg" onClick={() => setShowSolutions(true)}>
             <Eye className="mr-2 h-4 w-4" />
             Show Solutions
@@ -173,6 +181,11 @@ const DragDrop = () => {
         statementType={activeStatement}
         zones={getZones()}
         accounts={getFilteredAccounts()}
+      />
+
+      <CashFlowStructure
+        open={showCashFlowStructure}
+        onClose={() => setShowCashFlowStructure(false)}
       />
     </div>
   );
